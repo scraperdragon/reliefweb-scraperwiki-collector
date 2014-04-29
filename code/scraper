@@ -1,0 +1,8 @@
+#!/usr/bin/Rscript
+
+library(RCurl)
+library(rjson)
+library(sqldf)
+# library(reshape2)
+
+source('code/indicators.R')

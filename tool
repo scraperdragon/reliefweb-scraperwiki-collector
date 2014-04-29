@@ -1,0 +1,1 @@
+/tools/code-scraper-in-browser
