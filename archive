@@ -10,4 +10,5 @@ mkdir -p $VERSION
 echo $DATESTAMP > $VERSION/DATESTAMP
 mv *.csv $VERSION
 mv *.zip $VERSION
+cp ~/tool/index.html $VERSION
 echo "all ok"
