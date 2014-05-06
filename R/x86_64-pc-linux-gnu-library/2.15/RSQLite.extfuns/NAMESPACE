@@ -1,3 +1,0 @@
-useDynLib("RSQLite.extfuns")
-
-export("init_extensions")

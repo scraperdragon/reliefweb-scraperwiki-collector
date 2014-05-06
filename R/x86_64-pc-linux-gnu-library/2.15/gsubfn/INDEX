@@ -1,6 +1,0 @@
-as.function.formula     Make a one-line function from a formula.
-fn                      Transform formula arguments to functions.
-gsubfn                  Pattern Matching and Replacement
-gsubfn-package          gsubfn
-match.funfn             Generic extended version of R match.fun
-strapply                Apply a function over a string or strings.
