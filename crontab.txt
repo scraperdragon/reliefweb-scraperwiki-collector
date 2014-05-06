@@ -26,7 +26,7 @@ MAILTO="dataservices@scraperwiki.com"
 # @reboot  Run at startup
 
 # Automatically install the crontab file from source-control.
-* * * * * crontab /home/tool/crontab.txt
+# * * * * * crontab /home/tool/crontab.txt
 
 # Run the scraper. The only changes to this line should be the schedule.
 @daily /home/run.sh
