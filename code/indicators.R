@@ -82,8 +82,10 @@ db <- dbConnect(SQLite(), dbname="scraperwiki.sqlite")
     dbWriteTable(db, "indicator", indic, row.names = FALSE, overwrite = TRUE)
     dbWriteTable(db, "value", zValue, row.names = FALSE, overwrite = TRUE)
     # dbListFields(db, "data")
+
 dbDisconnect(db)
 
-
-test <- dbReadTable(db, "value")
+db <- dbConnect(SQLite(), dbname="scraperwiki.sqlite")
+    test <- dbReadTable(db, "value")
+dbDisconnect(db)
 
