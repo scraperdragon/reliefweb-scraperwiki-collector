@@ -29,5 +29,5 @@ MAILTO="dataservices@scraperwiki.com"
 # * * * * * crontab /home/tool/crontab.txt
 
 # Run the scraper. The only changes to this line should be the schedule.
-@daily /home/run.sh
+@daily /home/tool/run.sh
 

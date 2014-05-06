@@ -1,0 +1,2 @@
+cd ~/tool
+code/scraper
