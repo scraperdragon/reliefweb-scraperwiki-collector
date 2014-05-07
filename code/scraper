@@ -1,8 +1,19 @@
 #!/usr/bin/Rscript
 
+# The script called bellow "indicators.R" does the following: 
+#   - Collects data from the ReliefWeb API. 
+#   - Stores the raw data into the scraperwiki.sqlite db
+#   - Creates two indicators out of the raw data "number of reports" and "number of disasters"
+#   - Stores the indicators in the db
+#
+# Right not it is configured to only pull the latest data (from 2014). 
+# However, it can excract virtually all data from the ReliefWeb API 
+# only by adjusting a few parameters.
+#
+# Author: Luis Capelo | capelo@un.org | @luiscape
+
 library(RCurl)
 library(rjson)
 library(sqldf)
-# library(reshape2)
 
 source('code/indicators.R')

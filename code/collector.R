@@ -26,7 +26,7 @@ ReliefWebLatest <- function(entity = NULL,
     # The validation tests before are useful for helping the user make a 
     # right query and understand why his query isn't working. 
     
-    # Install depencency packages if not installed     
+    # Test if the query field has been provided.  
     if (is.null(query.field) == TRUE && is.null(text.query) == TRUE) { 
         stop("You have to either provide a `text.query' input or a `query.field` + `query.field.value` input.") 
     }
@@ -54,7 +54,7 @@ ReliefWebLatest <- function(entity = NULL,
     #### Building the URL. ####
 
     # The entity url to be queried.
-    if (is.null(entity) == FALSE) { entity.url <- paste0('/', entity) }
+    if (is.null(entity) == FALSE) { entity.url <- paste('/', entity, sep = "") }
     
     # Offset URL -- for iterations.
     offset.url <- "?offset=0"  # starting at 0.
@@ -111,12 +111,11 @@ ReliefWebLatest <- function(entity = NULL,
     # taking our date.created. 
     # not necessary in version 1 of the API.
     if (entity != "country" | entity != "sources") { 
-        date.created.url <- "&sort[0]=date.created:desc" 
+        sorting.url <- "&sort[]=date:desc" 
     }
-    else { date.created.url <- "" }
-
+    else { sorting.url <- "" }
     
-    query.url <- paste0(api.url,
+    query.url <- paste(api.url,
                        version.url,
                        entity.url,
                        offset.url,
@@ -124,7 +123,8 @@ ReliefWebLatest <- function(entity = NULL,
                        text.query.url,
                        query.field.url,
                        add.fields.url,
-                       date.created.url)
+                       sorting.url, 
+                       sep = "")
     
     
 
@@ -138,20 +138,33 @@ ReliefWebLatest <- function(entity = NULL,
 
     # Function to convert the resulting lits into rows in the data.frame
     FetchingFields <- function(df = NULL) {
-        for (i in 1:df$count) {
-            x <- data.frame(df$data[[i]]$fields)
-            if (i == 1) { data <- x }
-                else { 
-                    common_cols <- intersect(colnames(data), colnames(x))
-                    data <- rbind(
-                        data[, common_cols], 
-                        x[, common_cols]
-                    )
+        y <- 0
+        it <- df$count
+        if (length(it) > 0) {
+                for (i in 1:it) {
+                    x <- data.frame(df$data[[i]]$fields)
+                    if ('iso3' %in% names(x) == FALSE) {  # hacky solution
+                        y <- y + 1
+                    }
+                    else {
+                        if (i == 1) { data <- x }
+                        else {
+                            common_cols <- intersect(colnames(data), colnames(x))
+                            data <- rbind(
+                                data[, common_cols], 
+                                x[, common_cols]
+                            )
+                        }
+                    }
                 }
+            if (debug == TRUE) { 
+                print(paste(y, " record(s) didn't have iso3 codes.", sep = ""))
+            } 
+            data
         }
-        data
+        else { }
     }
-
+    
     # Function for creating iterations to go around 
     # the 1000-results limitation.
     RWIterations <- function(df = NULL) {
@@ -163,41 +176,51 @@ ReliefWebLatest <- function(entity = NULL,
         
         # Create progress bar.
         pb <- txtProgressBar(min = 0, max = total, style = 3)
-        
-        for (i in 2:total) {
-            
-            setTxtProgressBar(pb, i)  # Updates progress bar.
-            
-            offset.url <- paste0("?offset=", limit * i)
-            
-            # updating URL in each iteration
-            query.url.it <- paste(api.url,
-                               version.url,
-                               entity.url,
-                               offset.url,
-                               limit.url,
-                               text.query.url,
-                               query.field.url,
-                               add.fields.url,
-                               sep = "")
-            
-            if (debug == TRUE) {
-                print(paste("This is the it.url", it.url, sep = ""))
-                print(paste("From iteration number ", i, sep = ""))
-            }
-            
-            ## Error handling function for each iteration.
-            tryCatch(x <- fromJSON(getURLContent(query.url.it)), 
-                     error = function(e) { 
-                         print("There was an error in the URL queried. Skipping ...")
-                         final <- final
-                     }, 
-                     finally = { 
-                         x <- FetchingFields(df = x)  # Cleaning fields.
-                         final <- rbind(final, x)
-                     }
-            ) 
-        }
+            for (i in 2:total) {
+
+                    setTxtProgressBar(pb, i)  # Updates progress bar.
+                    
+                    offset.url <- paste("?offset=", (limit * i) - 1000, sep = "")
+                    
+                    # updating URL in each iteration
+                    query.url.it <- paste(api.url,
+                                       version.url,
+                                       entity.url,
+                                       offset.url,
+                                       limit.url,
+                                       text.query.url,
+                                       query.field.url,
+                                       add.fields.url,
+                                       sorting.url,
+                                       sep = "")
+
+                    if (debug == TRUE) {
+                        print(paste("This is the it.url: ", query.url.it, sep = ""))
+                        print(paste("From iteration number ", i, sep = ""))
+                    }
+                    
+                    ## Error handling function for each iteration.
+                    tryCatch(x <- fromJSON(getURLContent(query.url.it)), 
+                             error = function(e) { 
+                                 print("There was an error in the URL queried. Skipping ...")
+                                 final <- final
+                             }, 
+                             finally = {
+                                x <- FetchingFields(x)  # Cleaning fields.
+                                if (entity == 'reports') { 
+                                    if (is.null(to) == FALSE && 
+                                            to != format(as.Date(x$changed[1]), "%Y"))
+                                    { break }  # adding a break function.
+                                }
+                                if (entity == 'disasters') { 
+                                    if (is.null(to) == FALSE && 
+                                            to != format(as.Date(x$created[1]), "%Y"))
+                                    { break }  # adding a break function
+                                }
+                                final <- rbind(final, x)
+                             }
+                    )     
+                }
         close(pb)
         return(final)
     }
@@ -213,15 +236,15 @@ ReliefWebLatest <- function(entity = NULL,
     data <- FetchingFields(query)
     
     # UI element.
-    print(paste0("Fetching ~", 
+    print(paste("Fetching ~", 
                 ifelse(is.null(limit) == TRUE, 10, 
                        ifelse(identical(limit,all) == TRUE, count, limit)), 
-                " records."))
+                " records.", sep = ""))
     
 
     
     # Only run iterator if we are fetching "all" entries.
-    if (identical(limit, all) == TRUE) { data <- RWIterations(df = data) }
+    if (identical(limit, all) == TRUE) { data <- RWIterations(data) }
     
     print("Done.")
     return(data)
@@ -230,7 +253,33 @@ ReliefWebLatest <- function(entity = NULL,
 
 GetLatestDisasters <- function() { 
     ReliefWebLatest(entity = 'disasters', 
-                    limit = 1000,
+                    limit = 'all',
+                    text.query = "",
+                    query.field = NULL,
+                    query.field.value = NULL,
+                    add.fields = c('id', 'primary_country.iso3', 'date.created', 'url'),
+                    from = NULL,
+                    to = 2014,
+                    debug = FALSE,
+                    ver = "v1") 
+}
+
+GetLatestReports <- function() { 
+    ReliefWebLatest(entity = 'reports', 
+                limit = 'all',
+                text.query = "",
+                query.field = NULL,
+                query.field.value = NULL,
+                add.fields = c('id', 'primary_country.iso3', 'date.changed', 'url'),
+                from = NULL,
+                to = 2014,
+                debug = FALSE,
+                ver = "v1") 
+}
+
+GetAllDisasters <- function() { 
+    ReliefWebLatest(entity = 'disasters', 
+                    limit = 'all',
                     text.query = "",
                     query.field = NULL,
                     query.field.value = NULL,
@@ -241,15 +290,16 @@ GetLatestDisasters <- function() {
                     ver = "v1") 
 }
 
-GetLatestReports <- function() { 
+GetAllReports <- function() { 
     ReliefWebLatest(entity = 'reports', 
-                limit = 1000,
-                text.query = "",
-                query.field = NULL,
-                query.field.value = NULL,
-                add.fields = c('id', 'primary_country.iso3', 'date.created'),
-                from = NULL,
-                to = NULL,
-                debug = FALSE,
-                ver = "v1") 
+                    limit = 'all',
+                    text.query = "",
+                    query.field = NULL,
+                    query.field.value = NULL,
+                    add.fields = c('id', 'primary_country.iso3', 'date.changed', 'url'),
+                    from = NULL,
+                    to = NULL,
+                    debug = FALSE,
+                    ver = "v1") 
 }
+
