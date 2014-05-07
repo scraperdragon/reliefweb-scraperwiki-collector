@@ -1,5 +1,5 @@
-ReliefWeb Scraper Wiki Collector
-================================
+ReliefWeb ScraperWiki Collector
+===============================
 
 This collector connects to the ReliefWeb database and organizes the data in two indicators: 
 
