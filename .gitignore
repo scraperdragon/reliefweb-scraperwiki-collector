@@ -1,4 +1,4 @@
-*.sqlite
 .DS_Store
 .Rapp.history
 .Rhistory
+backup/*
