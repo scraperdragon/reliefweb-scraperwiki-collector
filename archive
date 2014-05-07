@@ -1,0 +1,14 @@
+#!/bin/bash -xe
+DATESTAMP=`date --iso`
+VERSION=v1.1
+cd ~/http
+rm -f archive.sql csv.zip dataset.csv indicator.csv value.csv sql.zip all.zip
+cat ../tool/archive.sql | sqlite3 ../tool/scraperwiki.sqlite
+zip csv.zip dataset.csv indicator.csv value.csv
+zip sql.zip ../tool/scraperwiki.sqlite
+mkdir -p $VERSION
+echo $DATESTAMP > $VERSION/DATESTAMP
+mv *.csv $VERSION
+mv *.zip $VERSION
+cp ~/tool/index.html $VERSION
+echo "all ok"

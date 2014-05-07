@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 .DS_Store
 .Rapp.history
 .Rhistory
 backup/*
+=======
+*.sqlite
+>>>>>>> a038013e41dc5c2f7be3a3a7bc31c87e7796573b
