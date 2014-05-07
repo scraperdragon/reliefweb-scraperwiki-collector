@@ -79,7 +79,6 @@ db <- dbConnect(SQLite(), dbname="scraperwiki.sqlite")
 
     dbWriteTable(db, "dataset", dtset, row.names = FALSE, overwrite = TRUE)
     dbWriteTable(db, "indicator", indic, row.names = FALSE, overwrite = TRUE)
-<<<<<<< HEAD
 
     # delete the entries from 2014
     dbSendQuery(db, "delete from value where period = 2014 
@@ -91,16 +90,6 @@ db <- dbConnect(SQLite(), dbname="scraperwiki.sqlite")
                     and dsID = 'reliefweb'")
     
     dbWriteTable(db, "value", zValue, row.names = FALSE, append = TRUE)
-=======
-    dbWriteTable(db, "value", zValue, row.names = FALSE, overwrite = TRUE)
-    # dbListFields(db, "data")
-
-dbDisconnect(db)
-
-db <- dbConnect(SQLite(), dbname="scraperwiki.sqlite")
-    test <- dbReadTable(db, "value")
-dbDisconnect(db)
->>>>>>> a038013e41dc5c2f7be3a3a7bc31c87e7796573b
 
     # for testing purposes
     # test <- dbReadTable(db, "value")
