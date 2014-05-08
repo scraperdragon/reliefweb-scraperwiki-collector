@@ -8,7 +8,7 @@ MAILTO="dataservices@scraperwiki.com"
 ##################################################################################### 
 
 
-# *    *    *    *    *  command to be executed
+# 0    0    *    *    *  command to be executed
 # ┬    ┬    ┬    ┬    ┬
 # │    │    │    │    │
 # │    │    │    │    │
