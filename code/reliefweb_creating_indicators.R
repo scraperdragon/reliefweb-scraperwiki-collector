@@ -17,11 +17,11 @@ ReliefwebCreateIndicators <- function(df = NULL,
     df$iso3 <- toupper(df$iso3)
     
     # Standardizing dates. 
-    if (entity == 'report') { df$changed <- as.Date(df$changed) }
+    if (entity == 'report') { df$created <- as.Date(df$created) }
     if (entity == 'disaster') { df$created <- as.Date(df$created) }
     
     # Creating a year facet. 
-    if (entity == 'report') { df$year <- format(df$changed, "%Y") }
+    if (entity == 'report') { df$year <- format(df$created, "%Y") }
     if (entity == 'disaster') { df$year <- format(df$created, "%Y") }
     
     

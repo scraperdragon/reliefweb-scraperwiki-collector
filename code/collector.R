@@ -209,7 +209,7 @@ ReliefWebLatest <- function(entity = NULL,
                                 x <- FetchingFields(x)  # Cleaning fields.
                                 if (entity == 'reports') { 
                                     if (is.null(to) == FALSE && 
-                                            to != format(as.Date(x$changed[1]), "%Y"))
+                                            to != format(as.Date(x$created[1]), "%Y"))
                                     { break }  # adding a break function.
                                 }
                                 if (entity == 'disasters') { 
@@ -270,7 +270,7 @@ GetLatestReports <- function() {
                 text.query = "",
                 query.field = NULL,
                 query.field.value = NULL,
-                add.fields = c('id', 'primary_country.iso3', 'date.changed', 'url'),
+                add.fields = c('id', 'primary_country.iso3', 'date.created', 'url'),
                 from = NULL,
                 to = 2014,
                 debug = FALSE,
@@ -296,7 +296,7 @@ GetAllReports <- function() {
                     text.query = "",
                     query.field = NULL,
                     query.field.value = NULL,
-                    add.fields = c('id', 'primary_country.iso3', 'date.changed', 'url'),
+                    add.fields = c('id', 'primary_country.iso3', 'date.created', 'url'),
                     from = NULL,
                     to = NULL,
                     debug = FALSE,
