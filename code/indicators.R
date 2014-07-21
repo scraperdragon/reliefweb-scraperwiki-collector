@@ -19,9 +19,9 @@ GenerateMeta()
 
 cat('Storing the data in a SW database.')
 db <- dbConnect(SQLite(), dbname="scraperwiki.sqlite")
-    dbWriteTable(db, "report_data", ReportData, row.names = FALSE, append = TRUE)
-    dbWriteTable(db, "disaster_data", DisasterData, row.names = FALSE, append = TRUE)
-    dbWriteTable(db, "scrape_meta", ScrapeMeta, row.names = FALSE, append = TRUE)
+    dbWriteTable(db, "_report_data", ReportData, row.names = FALSE, append = TRUE)
+    dbWriteTable(db, "_disaster_data", DisasterData, row.names = FALSE, append = TRUE)
+    dbWriteTable(db, "_scrape_meta", ScrapeMeta, row.names = FALSE, append = TRUE)
 dbDisconnect(db)
 
 cat('Creating indicators.')
@@ -55,6 +55,7 @@ reports$indID <- 'RW001'
 colnames(reports)[1] <- 'value'
 colnames(reports)[2] <- 'period'
 colnames(reports)[3] <- 'region'
+reports$region <- toupper(reports$region)
 reports$dsID <- 'reliefweb'
 reports$source <- 'ReliefWeb'
 
@@ -64,6 +65,7 @@ disasters$indID <- 'RW002'
 colnames(disasters)[1] <- 'value'
 colnames(disasters)[2] <- 'period'
 colnames(disasters)[3] <- 'region'
+disasters$region <- toupper(disasters$region)
 disasters$dsID <- 'reliefweb'
 disasters$source <- 'ReliefWeb'
 
